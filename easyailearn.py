@@ -447,7 +447,6 @@ def use_model_on_file():
 
 def main():
     while True:
-        trainer = PoseTrainer()
         print("\n--- Меню Easy-AI-Learn ---")
         print("1. Классификация изображений")
         print("2. Распознование поз")
@@ -455,9 +454,9 @@ def main():
         print("4. Работа с текстом")
         print("5. Выйти")
 
-        choice = input("Выберите опцию (1-5): ")
+        y = input("Выберите опцию (1-5): ")
 
-        if choice == '1':
+        if y == '1':
             while True:
                 print("\n--- Меню классификации изображений ---")
                 print("1. Обучить новую модель")
@@ -499,8 +498,9 @@ def main():
                     break
                 else:
                     print("Неверный ввод")
-        elif choice == '2':
+        elif y == '2':
             while True:
+                trainer = PoseTrainer()
                 print("\n--- Меню распознавания поз ---")
                 print("1. Добавить новую позу в датасет")
                 print("2. Запустить распознавание поз")
@@ -521,7 +521,7 @@ def main():
                     break
                 else:
                     print("Неверный ввод, попробуйте еще раз")
-        elif choice == '3':
+        elif y == '3':
             while True:
                 print("\n--- Меню классификации звуков ---")
                 print("1. Создать новый датасет (запись с микрофона)")
@@ -544,9 +544,9 @@ def main():
                     break
                 else:
                     print("Неверный ввод. Пожалуйста, выберите от 1 до 5.")
-        elif choice == '4':
+        elif y == '4':
             print('В разработке')
-        elif choice == '5':
+        elif y == '5':
             print("Выход из программы")
             break
         else:
