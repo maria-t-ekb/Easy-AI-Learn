@@ -38,25 +38,27 @@ def upload():
         return 'Файл не найден в запросе', 400
 
     file = request.files['file']
+    y = request.form['epochs']
+    d = request.form['device']
 
     # Можно сохранить файл:
     # filename = file.filename
     # os.mkdir()
     # filename = 'dataset'
-    file.save(f'uploads/dataset')  # Убедитесь, что папка uploads существует
-    return yolo_train.y_train('uploads/dataset')
-    # return 'успешно'
-    # Или обработать содержимое файла:
-    # content = file.read()
+    # file.save(f'uploads/{filename}')
+
+    file.save(f'uploads/dataset')  # Убедись, что папка uploads существует
+    return yolo_train.y_train('uploads/dataset', y, d)
+    # return f'{filename}, {y}, {d}'
     # return f'Файл {filename} успешно загружен'
 
-
+@app.route('/upload1', methods=['POST'])
 def ai_test():
     file = request.files['file']
     filename = file.filename
     file.save(f'uploads/{filename}')
     return yolo_train.y_test(f'uploads/{filename}')
-
+    # return 'file'
 
 
 def get_db_connection():
