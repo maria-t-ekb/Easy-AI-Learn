@@ -2,6 +2,7 @@ from flask import Flask, request, redirect, url_for, send_from_directory, render
 # import easyailearn
 import yolo_train
 import sqlite3
+import os
 
 app = Flask(__name__)
 
@@ -34,10 +35,20 @@ def go_about():
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    if 'file' not in request.files:
+    if 'files' not in request.files:
         return 'Файл не найден в запросе', 400
 
-    file = request.files['file']
+    # file = request.files['file']
+
+    files = request.files.getlist('files')
+    for file in files:
+        relative_path = file.filename
+        save_path = os.path.join('uploads', relative_path)
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        file.save(save_path)
+
+    dir_name = [x for x in relative_path.split('/')][0]
+
     y = request.form['epochs']
     d = request.form['device']
 
@@ -47,10 +58,11 @@ def upload():
     # filename = 'dataset'
     # file.save(f'uploads/{filename}')
 
-    file.save(f'uploads/dataset')  # Убедись, что папка uploads существует
-    return yolo_train.y_train('uploads/dataset', y, d)
+    # file.save(f'uploads/dataset')  # Убедись, что папка uploads существует
+    return yolo_train.y_train(f'uploads/{dir_name}', y, d)
     # return f'{filename}, {y}, {d}'
-    # return f'Файл {filename} успешно загружен'
+    # return f'Файл успешно загружен'
+
 
 @app.route('/upload1', methods=['POST'])
 def ai_test():
