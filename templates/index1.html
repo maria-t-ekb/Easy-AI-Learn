@@ -309,10 +309,12 @@
                 return;
             };
 
-            formData.append('file', fileField.files[0]);
-            formData.append('epochs', epochs.value);
+            // formData.append('file', fileField.files[0]);
+            for (const file of fileField.files) {
+                formData.append('files', file, file.webkitRelativePath);
+            }
 
-            const deviceRadio = document.querySelector('input[name="device"]:checked');if (!deviceRadio) {    alert('Пожалуйста, выберите устройство');    return;}formData.append('device', deviceRadio.value);
+            formData.append('epochs', epochs.value);
             formData.append('device', document.querySelector('input[name="device"]:checked').value);
 
             fetch('/upload', {
