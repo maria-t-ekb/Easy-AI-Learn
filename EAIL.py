@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, url_for, send_from_directory, render_template, send_file
 # import easyailearn
-# import yolo_train
+import yolo_train
 import sqlite3
 import os
 
@@ -77,8 +77,8 @@ def image_all_dataset_upload():
     y = int(request.form['epochs'])
     d = 1
 
-    # return yolo_train.y_train(f'uploads/{dir_name}', y, d)
-    return f'{dir_name}, {y}, {d}'
+    return yolo_train.y_train(f'uploads/{dir_name}', y, d)
+    # return f'{dir_name}, {y}, {d}'
 
 
 @app.route('/audio_all_dataset_upload', methods=['POST'])
@@ -93,7 +93,8 @@ def audio_all_dataset_upload():
     d = 1
 
     # return yolo_train.y_train(f'uploads/{dir_name}', y, d)
-    return f'{dir_name}, {y}, {d}'
+    # return f'{dir_name}, {y}, {d}'
+    return ' '
 
 
 @app.route('/pose_all_dataset_upload', methods=['POST'])
@@ -108,7 +109,8 @@ def pose_all_dataset_upload():
     d = 1
 
     # return yolo_train.y_train(f'uploads/{dir_name}', y, d)
-    return f'{dir_name}, {y}, {d}'
+    # return f'{dir_name}, {y}, {d}'
+    return ' '
 
 
 @app.route('/text_all_dataset_upload', methods=['POST'])
@@ -123,7 +125,8 @@ def text_all_dataset_upload():
     d = 1
 
     # return yolo_train.y_train(f'uploads/{dir_name}', y, d)
-    return f'{dir_name}, {y}, {d}'
+    # return f'{dir_name}, {y}, {d}'
+    return ' '
 
 
 @app.route('/part_dataset_upload', methods=['POST'])
@@ -152,32 +155,35 @@ def image_part_dataset_train():
     project_name = request.form.get('ProjectName')
     y = int(request.form['epochs'])
     d = 1
-    return f'{project_name}, {y}, {d}'
+    # return f'{project_name}, {y}, {d}'
     # return yolo_train.y_train(f'uploads/{project_name}', y, d)
+    return
 
 @app.route('/audio_part_dataset_train', methods=['POST'])
 def audio_part_dataset_train():
     project_name = request.form.get('ProjectName')
     y = int(request.form['epochs'])
     d = 1
-    return f'{project_name}, {y}, {d}'
+    # return f'{project_name}, {y}, {d}'
     # return yolo_train.y_train(f'uploads/{project_name}', y, d)
+    return ' '
 
 @app.route('/pose_part_dataset_train', methods=['POST'])
 def pose_part_dataset_train():
     project_name = request.form.get('ProjectName')
     y = int(request.form['epochs'])
     d = 1
-    return f'{project_name}, {y}, {d}'
-    # return yolo_train.y_train(f'uploads/{project_name}', y, d)
+    # return f'{project_name}, {y}, {d}'
+    return yolo_train.y_train(f'uploads/{project_name}', y, d)
 
 @app.route('/text_part_dataset_train', methods=['POST'])
 def text_part_dataset_train():
     project_name = request.form.get('ProjectName')
     y = int(request.form['epochs'])
     d = 1
-    return f'{project_name}, {y}, {d}'
+    # return f'{project_name}, {y}, {d}'
     # return yolo_train.y_train(f'uploads/{project_name}', y, d)
+    return ' '
 
 
 @app.route('/image_test', methods=['POST'])
@@ -185,8 +191,8 @@ def image_test():
     file = request.files['file']
     filename = file.filename
     file.save(f'uploads/{filename}')
-    # return yolo_train.y_test(f'uploads/{filename}')
-    return 'file'
+    return yolo_train.y_test(f'uploads/{filename}')
+    # return 'file'
 
 @app.route('/audio_test', methods=['POST'])
 def audio_test():
@@ -194,7 +200,7 @@ def audio_test():
     filename = file.filename
     file.save(f'uploads/{filename}')
     # return yolo_train.y_test(f'uploads/{filename}')
-    return 'file'
+    return ' '
 
 @app.route('/pose_test', methods=['POST'])
 def pose_test():
@@ -202,7 +208,7 @@ def pose_test():
     filename = file.filename
     file.save(f'uploads/{filename}')
     # return yolo_train.y_test(f'uploads/{filename}')
-    return 'file'
+    return ' '
 
 @app.route('/text_test', methods=['POST'])
 def text_test():
@@ -210,12 +216,13 @@ def text_test():
     filename = file.filename
     file.save(f'uploads/{filename}')
     # return yolo_train.y_test(f'uploads/{filename}')
-    return 'file'
+    # return 'file'
+    return ' '
 
 
 @app.route('/upload_neuro')
 def upload_neuro():
-    path = "uploads/Без названия.jpg"
+    path = "runs/classify/train/weights/best.pt"
     return send_file(path, as_attachment=True, download_name='neuro.pdf')
 
 def get_db_connection():
@@ -232,5 +239,5 @@ def init_db():
     conn.close()
 
 if __name__ == '__main__':
-    app.run()
-    # app.run(host='0.0.0.0')
+    # app.run()
+    app.run(host='0.0.0.0')
