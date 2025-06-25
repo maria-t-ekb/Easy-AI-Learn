@@ -13,6 +13,9 @@ import shutil
 from ultralytics import YOLO
 import cv2
 from pathlib import Path
+import torch
+from transformers import GPT2LMHeadModel, GPT2Tokenizer, Trainer, TrainingArguments
+from transformers import DataCollatorForLanguageModeling
 
 #Class image
 def process_classification_result(result):
@@ -445,6 +448,135 @@ def use_model_on_file():
     except Exception as e:
         print(f"Ошибка при обработке файла: {e}")
 
+
+class TextModelHandler:
+    def __init__(self):
+        self.model = None
+        self.tokenizer = None
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    def train(self, dataset_path, output_dir, epochs=3):
+        try:
+            os.makedirs(dataset_path, exist_ok=True)
+            os.makedirs(output_dir, exist_ok=True)
+
+            def load_text_data(path):
+                files = [f for f in Path(path).glob("*.txt") if f.is_file()]
+                texts = []
+                for file in files:
+                    try:
+                        with open(file, 'r', encoding='utf-8') as f:
+                            texts.append(f.read())
+                    except Exception as e:
+                        print(f"Ошибка чтения файла {file}: {e}")
+                return texts
+
+            texts = load_text_data(dataset_path)
+            if not texts:
+                raise ValueError("Не найдены текстовые файлы в датасете")
+
+            temp_file = os.path.join(output_dir, "temp_dataset.txt")
+            with open(temp_file, 'w', encoding='utf-8') as f:
+                f.write("\n\n".join(texts))
+
+            model_name = "sberbank-ai/rugpt3medium_based_on_gpt2"
+            self.tokenizer = GPT2Tokenizer.from_pretrained(model_name)
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+            self.model = GPT2LMHeadModel.from_pretrained(model_name).to(self.device)
+
+            class TextDataset(torch.utils.data.Dataset):
+                def __init__(self, file_path, tokenizer):
+                    self.tokenizer = tokenizer
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        self.texts = f.read().split('\n\n')
+
+                def __len__(self):
+                    return len(self.texts)
+
+                def __getitem__(self, idx):
+                    encoding = self.tokenizer(
+                        self.texts[idx],
+                        truncation=True,
+                        max_length=128,
+                        padding="max_length",
+                        return_tensors="pt"
+                    )
+                    return {
+                        'input_ids': encoding['input_ids'].squeeze(),
+                        'attention_mask': encoding['attention_mask'].squeeze()
+                    }
+
+            dataset = TextDataset(temp_file, self.tokenizer)
+
+            data_collator = DataCollatorForLanguageModeling(
+                tokenizer=self.tokenizer,
+                mlm=False,
+            )
+
+            training_args = TrainingArguments(
+                output_dir=output_dir,
+                overwrite_output_dir=True,
+                num_train_epochs=epochs,
+                per_device_train_batch_size=2,
+                save_steps=500,
+                save_total_limit=2,
+                logging_dir=os.path.join(output_dir, 'logs'),
+                fp16=torch.cuda.is_available(),
+                learning_rate=3e-5,
+                optim="adamw_torch",
+            )
+
+            trainer = Trainer(
+                model=self.model,
+                args=training_args,
+                train_dataset=dataset,
+                data_collator=data_collator,
+            )
+
+            trainer.train()
+            self.model.save_pretrained(output_dir)
+            self.tokenizer.save_pretrained(output_dir)
+
+            os.remove(temp_file)
+            return True, "Модель успешно обучена!"
+
+        except Exception as e:
+            return False, f"Ошибка: {str(e)}"
+
+    def load_model(self, model_dir):
+        try:
+            self.model = GPT2LMHeadModel.from_pretrained(model_dir).to(self.device)
+            self.tokenizer = GPT2Tokenizer.from_pretrained(model_dir)
+            return True, "Модель загружена"
+        except Exception as e:
+            return False, f"Ошибка загрузки: {str(e)}"
+
+    def generate_text(self, prompt, max_length=100):
+        if not self.model or not self.tokenizer:
+            return "Модель не загружена"
+
+        inputs = self.tokenizer(
+            prompt,
+            return_tensors="pt",
+            padding=True,
+            truncation=True
+        ).to(self.device)
+
+        with torch.no_grad():
+            outputs = self.model.generate(
+                inputs.input_ids,
+                attention_mask=inputs.attention_mask,
+                max_length=max_length,
+                do_sample=True,
+                top_k=50,
+                top_p=0.9,
+                temperature=0.7,
+                pad_token_id=self.tokenizer.eos_token_id,
+            )
+
+        return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+
 def main():
     while True:
         print("\n--- Меню Easy-AI-Learn ---")
@@ -498,6 +630,7 @@ def main():
                     break
                 else:
                     print("Неверный ввод")
+
         elif y == '2':
             while True:
                 trainer = PoseTrainer()
@@ -521,6 +654,7 @@ def main():
                     break
                 else:
                     print("Неверный ввод, попробуйте еще раз")
+
         elif y == '3':
             while True:
                 print("\n--- Меню классификации звуков ---")
@@ -544,8 +678,39 @@ def main():
                     break
                 else:
                     print("Неверный ввод. Пожалуйста, выберите от 1 до 5.")
+
         elif y == '4':
-            print('В разработке')
+            while True:
+                text_model = TextModelHandler()
+                print("\n--- Меню классификации звуков ---")
+                print("1. Создать и обучить новую нейросеть")
+                print("2. Использовать нейросеть")
+                print("3. Назад")
+
+                choice = input("Выберите опцию (1-3): ")
+
+                if choice == '1':
+                    dataset_path = "datasets/text"
+                    output_dir = "runs/text"
+                    x = int(input('Сколько эпох: '))
+                    text_model.train(dataset_path, output_dir, x)
+                elif choice == '2':
+                    model_dir = "runs/text"
+                    success, message = text_model.load_model(model_dir)
+                    print(message)
+                    if not text_model.model:
+                        print("Сначала загрузите модель!")
+                        continue
+                    prompt = input("Введите начальный текст для генерации: ")
+                    max_length = int(input("Введите максимальную длину текста (по умолчанию 100): ") or 100)
+                    generated_text = text_model.generate_text(prompt, max_length)
+                    print("\nСгенерированный текст:")
+                    print(generated_text)
+                elif choice == '3':
+                    break
+                else:
+                    print("Неверный ввод. Пожалуйста, выберите от 1 до 5.")
+
         elif y == '5':
             print("Выход из программы")
             break
