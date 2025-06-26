@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        body {
+        font-family: Times New Roman, sans-serif;
+        }
+        .popup {
+         position: relative;
+         display: inline-block;
+         cursor: pointer;
+        }
+        .popup .b-popup {
+         visibility: hidden;
+        }
+        .popup .show {
+         visibility: visible;
+         -webkit-animation: fadeIn 1s;
+         animation: fadeIn 1s;
+        }
+        .popuptext{
+         height:65%;
+         background-color: rgba(0,0,0,0.5);
+         overflow:auto;
+         position:fixed;
+         top:10%;
+         width: auto;
+         background-color: #6A5ACD;
+         color: #fff;
+         text-align: justify;
+         border-radius: 10px;
+         padding: 20px;
+         position: fixed;
+         z-index: 1;
+         bottom: 125%;
+         margin-left: 10%;
+         margin-right: 10%;
+        }
+        .b-popup{
+         width:100%;
+         height: 100%;
+         background-color: rgba(0,0,0,0.5);
+         overflow:hidden;
+         position:fixed;
+         top:0px;
+         left:0%;
+         right:0%;
+        }
+        .head {
+         font-size: 125%;
+         font-family: Times New Roman;
+         top: 5px;
+        }
+        .rightimg  {
+         float: right;
+         margin: 7px 0 7px 7px;
+        }
+        #question:hover {
+         cursor: pointer;
+         text-decoration: underline;
+         color: #4B0082;
+        }
+        #question {
+         color: #0000FF;
+        }
+        header {
+         background: #0247d1;
+        }
+        h1{
+         color: #d9fffb;
+        }
+        .text_head{
+         font-size: 150%; /* Размер шрифта в процентах */
+         font-family: serif; /* Шрифт с засечками */
+        }
+        .file {
+         background: #0247d1;
+        }
+        .new_project {
+
+        }
+    </style>
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <!-- production version, optimized for size and speed -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2"></script> -->
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="popup">
+                <span class="b-popup" id="myPopup" align="center" onclick="popup(event)">
+                    <div class="popuptext" align="center">
+                        <p>✨ Интуитивно понятный интерфейс– обучение ИИ через простую загрузку данных (изображения, аудио, текст) всего в несколько кликов.<br>
+                            🚀 Готовые шаблоны для обучения – предобученные модели для распознавания объектов, звуков, жестов и текста.<br>
+                            ☁️ Облачные вычисления – обработка данных прямо в браузере или на сервере, без необходимости в мощном оборудовании.<br>
+                        </p>
+                    </div>
+                </span>
+            </div>
+            <div class="row">
+                <div class="col col-lg-8">
+                    <h1>Easy AI Learn</h1>
+                </div>
+                <div class="col col-lg-4" align="right">
+                    <button onclick="popup(event)" class="btn btn-outline-light text_head">Дополнительная информация</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container" id="app">
+        <div class="row">
+<!--            <div class="col col-lg-4">-->
+<!--                <p>что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то</p>-->
+<!--            </div>-->
+<!--            <div class="col col-lg-8">-->
+<!--                <p>что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то что-то</p>-->
+<!--            </div>-->
+            <p>Easy AI Learn — это инновационный образовательный веб-сайт, использующий искусственный интеллект для создания персонализированного и интерактивного обучения. Как аналог Google’s Teachable Machine, платформа позволяет пользователям легко обучать модели машинного обучения без необходимости программирования, но с акцентом на образовательные цели.</p>
+        </div>
+        <div class="row">
+            <h2>Создать новый проект</h2>
+            <div class="new_project">
+                <a href='/image_part_dataset'><button type="button" class="btn btn-outline-info">Проект с изображениями</button></a>
+            </div>
+            <div class="new_project">
+                <a href="/audio_part_dataset"><button type="button" class="btn btn-outline-info">Проект с аудио</button></a>
+            </div>
+            <div class="new_project">
+                <a href="/pose_part_dataset"><button type="button" class="btn btn-outline-info">Проект с позами</button></a>
+            </div>
+            <div class="new_project">
+                <a href="/text_part_dataset"><button type="button" class="btn btn-outline-info">Проект с текстом</button></a>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function popup(event) {
+            var popup = document.getElementById("myPopup");
+            popup.classList.toggle("show");
+        }
+  </script>
+</body>
+</html>
